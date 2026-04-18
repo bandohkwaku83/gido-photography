@@ -109,8 +109,11 @@ export default function ContactUs() {
             alt=""
             fill
             sizes="100vw"
+            quality={76}
+            unoptimized
             className="object-cover"
             priority
+            decoding="async"
           />
           <div className="absolute inset-0 bg-stone-900/80 dark:bg-black/85" aria-hidden />
         </div>

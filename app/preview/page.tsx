@@ -4,13 +4,12 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { useEffect, useMemo, Suspense } from "react";
 import Navigation from "../components/Navigation";
-
-const S3_BUCKET_HTTP_BASE = "https://gidophotography-images.s3.us-east-1.amazonaws.com";
+import { S3_MEDIA_ORIGIN, shouldBypassImageOptimizer } from "@/lib/s3Image";
 
 function resolveImageSrc(src: string) {
   if (!src.startsWith("s3://")) return src;
   const s3Path = src.replace(/^s3:\/\/[^/]+\//, "");
-  return `${S3_BUCKET_HTTP_BASE}/${s3Path.split("/").map(encodeURIComponent).join("/")}`;
+  return `${S3_MEDIA_ORIGIN}/${s3Path.split("/").map(encodeURIComponent).join("/")}`;
 }
 
 function PreviewContent() {
@@ -42,6 +41,7 @@ function PreviewContent() {
   }, [currentIndexParam]);
 
   const currentImage = images[currentIndex] || src;
+  const resolvedPreviewSrc = currentImage ? resolveImageSrc(currentImage) : "";
   const hasMultipleImages = images.length > 1;
 
   const goToNext = () => {
@@ -194,12 +194,15 @@ function PreviewContent() {
           )}
 
           <Image
-            src={resolveImageSrc(currentImage)}
+            src={resolvedPreviewSrc}
             alt={title || `Image ${currentIndex + 1}`}
             width={1600}
             height={1600}
             sizes="90vw"
+            quality={75}
+            unoptimized={shouldBypassImageOptimizer(resolvedPreviewSrc)}
             priority
+            decoding="async"
             className="max-w-[90vw] max-h-[85vh] w-auto h-auto object-contain rounded-lg shadow-2xl"
           />
           

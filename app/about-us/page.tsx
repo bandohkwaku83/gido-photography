@@ -7,9 +7,9 @@ import Navigation from '../components/Navigation';
 import ScrollAnimation from '../components/ScrollAnimation';
 import FloatingElements from '../components/FloatingElements';
 import Footer from '../components/Footer';
+import { S3_MEDIA_ORIGIN, shouldBypassImageOptimizer } from '@/lib/s3Image';
 
 const FILTERS = ['Wedding', 'Studio', 'Portraits', 'Birthdays', 'Brands', 'Graduations'] as const;
-const S3_BUCKET_HTTP_BASE = 'https://gidophotography-images.s3.us-east-1.amazonaws.com';
 
 const WEDDING_IMAGE_FILES = [
   'GIDO7922.CR3-2.JPG', 'GIDO9935.JPG', 'IMG_1630.JPG', 'GIDO6772.JPG', 'GIDO9512.JPG',
@@ -185,7 +185,7 @@ const IMAGE_ARRAYS = {
 function resolveImageSrc(src: string) {
   if (!src.startsWith('s3://')) return src;
   const s3Path = src.replace(/^s3:\/\/[^/]+\//, '');
-  return `${S3_BUCKET_HTTP_BASE}/${s3Path.split('/').map(encodeURIComponent).join('/')}`;
+  return `${S3_MEDIA_ORIGIN}/${s3Path.split('/').map(encodeURIComponent).join('/')}`;
 }
 
 export default function AboutUs() {
@@ -308,7 +308,9 @@ export default function AboutUs() {
               </div>
               
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {visibleImages.map((imageSrc, index) => (
+                {visibleImages.map((imageSrc, index) => {
+                  const resolvedSrc = resolveImageSrc(imageSrc);
+                  return (
                   <div
                     key={index}
                     className="relative aspect-square overflow-hidden group cursor-pointer"
@@ -322,12 +324,15 @@ export default function AboutUs() {
                     }}
                   >
                     <Image
-                      src={resolveImageSrc(imageSrc)}
+                      src={resolvedSrc}
                       alt={`${activeFilter} image ${index + 1}`}
                       fill
                       sizes="(max-width: 768px) 50vw, 25vw"
+                      quality={70}
+                      unoptimized={shouldBypassImageOptimizer(resolvedSrc)}
                       className="object-cover transition-transform duration-500 group-hover:scale-110"
                       loading="lazy"
+                      decoding="async"
                     />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center">
                       <svg className="w-12 h-12 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -335,7 +340,8 @@ export default function AboutUs() {
                       </svg>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
               {visibleCount < currentImages.length && (
                 <div className="mt-8 flex justify-center">

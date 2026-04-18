@@ -1,12 +1,24 @@
 'use client';
 
-import { useRef, useEffect, Children, isValidElement, ReactNode } from 'react';
+import {
+  useRef,
+  useEffect,
+  Children,
+  isValidElement,
+  type ReactElement,
+  type ReactNode,
+} from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
 interface ScrollStackProps {
+  children: ReactNode;
+  className?: string;
+}
+
+interface ScrollStackItemProps {
   children: ReactNode;
   className?: string;
 }
@@ -91,6 +103,7 @@ function ScrollStack({ children, className = '' }: ScrollStackProps) {
           ) {
             return child;
           }
+          const stackChild = child as ReactElement<ScrollStackItemProps>;
           const i = cardIndex++;
           return (
             <div
@@ -101,18 +114,13 @@ function ScrollStack({ children, className = '' }: ScrollStackProps) {
               className="absolute inset-0 flex items-center justify-center"
               style={{ willChange: 'transform' }}
             >
-              {child.props.children}
+              {stackChild.props.children}
             </div>
           );
         })}
       </div>
     </div>
   );
-}
-
-interface ScrollStackItemProps {
-  children: ReactNode;
-  className?: string;
 }
 
 export function ScrollStackItem({ children, className = '' }: ScrollStackItemProps) {

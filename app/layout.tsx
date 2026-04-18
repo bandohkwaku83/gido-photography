@@ -24,6 +24,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link
+          rel="preconnect"
+          href="https://gidophotography-images.s3.us-east-1.amazonaws.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="dns-prefetch"
+          href="https://gidophotography-images.s3.us-east-1.amazonaws.com"
+        />
+      </head>
       <body
         className={`${lato.variable} font-sans antialiased`}
       >
