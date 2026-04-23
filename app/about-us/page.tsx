@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Navigation from '../components/Navigation';
 import ScrollAnimation from '../components/ScrollAnimation';
 import FloatingElements from '../components/FloatingElements';
@@ -188,9 +188,16 @@ function resolveImageSrc(src: string) {
   return `${S3_MEDIA_ORIGIN}/${s3Path.split('/').map(encodeURIComponent).join('/')}`;
 }
 
-export default function AboutUs() {
+function AboutUsContent() {
   const router = useRouter();
-  const [activeFilter, setActiveFilter] = useState('Wedding');
+  const searchParams = useSearchParams();
+
+  const filterFromUrl = (() => {
+    const f = searchParams.get('filter');
+    return f && (FILTERS as readonly string[]).includes(f) ? f : 'Wedding';
+  })();
+
+  const [activeFilter, setActiveFilter] = useState(filterFromUrl);
   const [visibleCount, setVisibleCount] = useState(16);
   const currentImages = useMemo(
     () => IMAGE_ARRAYS[activeFilter as keyof typeof IMAGE_ARRAYS] || [],
@@ -204,6 +211,22 @@ export default function AboutUs() {
   useEffect(() => {
     setVisibleCount(16);
   }, [activeFilter]);
+
+  // Keep component state in sync when the user navigates back/forward and the
+  // URL changes (e.g. returning from /preview with ?filter=Graduations in the URL).
+  useEffect(() => {
+    const f = searchParams.get('filter');
+    if (f && (FILTERS as readonly string[]).includes(f) && f !== activeFilter) {
+      setActiveFilter(f);
+    }
+  }, [searchParams, activeFilter]);
+
+  const handleFilterChange = (filter: string) => {
+    setActiveFilter(filter);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('filter', filter);
+    router.replace(`/about-us?${params.toString()}`, { scroll: false });
+  };
 
   return (
     <div className="min-h-screen bg-white dark:bg-black relative overflow-hidden">
@@ -292,7 +315,7 @@ export default function AboutUs() {
                 {FILTERS.map((filter) => (
                   <button
                     key={filter}
-                    onClick={() => setActiveFilter(filter)}
+                    onClick={() => handleFilterChange(filter)}
                     className={`text-base md:text-lg font-medium transition-colors duration-300 pb-2 relative ${
                       activeFilter === filter
                         ? 'text-black dark:text-white'
@@ -417,5 +440,13 @@ export default function AboutUs() {
 
       <Footer />
     </div>
+  );
+}
+
+export default function AboutUs() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white dark:bg-black" />}>
+      <AboutUsContent />
+    </Suspense>
   );
 }

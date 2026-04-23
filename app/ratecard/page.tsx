@@ -178,10 +178,37 @@ export default function Ratecard() {
       },
       team: 'One Photographer, One Videographer, One Assistant',
     },
+    {
+      name: 'STUDIO',
+      tier: 'STUDIO',
+      color: 'from-emerald-500 via-teal-500 to-cyan-500',
+      bgGradient: 'from-emerald-50/50 via-teal-50/30 to-cyan-50/50',
+      borderGradient: 'from-emerald-400/50 via-teal-400/50 to-cyan-400/50',
+      icon: '🎬',
+      image: '/images/studio_card/GIDO0057-min.JPG',
+      hideDetails: true,
+      detailsUrl: 'https://new.express.adobe.com/webpage/nl57SMirmjIqc',
+      photography: { features: [] },
+      videography: { features: [] },
+      team: '',
+    },
+    {
+      name: 'OUTDOOR',
+      tier: 'OUTDOOR',
+      color: 'from-amber-500 via-lime-500 to-green-500',
+      bgGradient: 'from-amber-50/50 via-lime-50/30 to-green-50/50',
+      borderGradient: 'from-amber-400/50 via-lime-400/50 to-green-400/50',
+      icon: '🌿',
+      image: '/images/outdoor_cards/IMG_0048-min.JPG',
+      hideDetails: true,
+      detailsUrl: 'https://new.express.adobe.com/webpage/nl57SMirmjIqc',
+      photography: { features: [] },
+      videography: { features: [] },
+      team: '',
+    },
   ];
 
   const WeddingPackageCard = ({ pkg, index }: { pkg: any; index: number }) => {
-    const [isHovered, setIsHovered] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
     const [showDetails, setShowDetails] = useState(false);
     const cardRef = useRef<HTMLDivElement>(null);
@@ -213,8 +240,6 @@ export default function Ratecard() {
         className={`relative group transition-all duration-700 ${
           isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
         }`}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
       >
         {/* Popular Badge */}
         {pkg.popular && (
@@ -228,26 +253,18 @@ export default function Ratecard() {
         <div
           className={`relative h-full bg-gradient-to-br ${pkg.bgGradient} dark:from-gray-900/50 dark:via-gray-800/50 dark:to-gray-900/50 
           backdrop-blur-xl rounded-3xl p-6 border border-white/20 dark:border-gray-700/50
-          shadow-2xl transition-all duration-500
-          ${isHovered ? 'scale-[1.02] shadow-xl -translate-y-1' : 'scale-100'}
+          shadow-lg hover:shadow-xl transition-shadow duration-300
           ${pkg.popular ? 'ring-2 ring-purple-400/50' : ''}`}
         >
-          {/* Gradient Border Effect */}
-          <div
-            className={`absolute inset-0 rounded-3xl bg-gradient-to-r ${pkg.borderGradient} opacity-0 group-hover:opacity-50 transition-opacity duration-500 -z-10 blur-md`}
-          />
-
           {/* Image Section */}
-          <div className="relative h-48 mb-4 rounded-2xl overflow-hidden group/image">
+          <div className="relative h-48 mb-4 rounded-2xl overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent z-10" />
             <Image
               src={pkg.image}
               alt={pkg.name}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className={`object-cover transition-transform duration-700 ${
-                isHovered ? 'scale-110' : 'scale-100'
-              }`}
+              className="object-cover"
               loading="lazy"
             />
             {/* Tier Badge */}
@@ -257,7 +274,7 @@ export default function Ratecard() {
               </div>
             </div>
             {/* Icon Overlay */}
-            <div className="absolute bottom-4 left-4 z-20 text-4xl transform transition-transform duration-300 group-hover/image:scale-125">
+            <div className="absolute bottom-4 left-4 z-20 text-4xl">
               {pkg.icon}
             </div>
           </div>
@@ -273,56 +290,33 @@ export default function Ratecard() {
               </h3>
             </div>
 
-            {/* Total Price */}
-            <div className="space-y-2">
-              <div className="flex items-baseline gap-2">
-                <span className="text-xs text-gray-600 dark:text-gray-400">Total:</span>
-                <span
-                  className="text-2xl font-black text-black dark:text-white"
-                >
-                  {pkg.totalPrice}
-                </span>
-              </div>
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-2">
-                  <div className="text-gray-600 dark:text-gray-400 mb-1">Photography</div>
-                  <div className="font-bold text-black dark:text-white">
-                    {pkg.photographyPrice}
-                  </div>
-                </div>
-                <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-2">
-                  <div className="text-gray-600 dark:text-gray-400 mb-1">Videography</div>
-                  <div className="font-bold text-black dark:text-white">
-                    {pkg.videographyPrice}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Divider */}
-            <div className={`h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent dark:via-gray-600`} />
-
-            {/* Team Info */}
-            <div className="bg-white/30 dark:bg-gray-800/30 rounded-lg p-3">
-              <p className="text-xs text-gray-700 dark:text-gray-300 font-medium">
-                <span className="font-bold">Team:</span> {pkg.team}
-              </p>
-            </div>
+            {/* Pricing & Team — external link */}
+            <a
+              href={pkg.detailsUrl ?? 'https://new.express.adobe.com/webpage/IaDWjfuySl13t'}
+              className="block w-full text-center py-3 px-4 rounded-lg text-sm font-semibold
+                text-purple-700 dark:text-purple-300 hover:text-purple-900 dark:hover:text-purple-100
+                bg-white/40 dark:bg-gray-800/40 hover:bg-white/60 dark:hover:bg-gray-800/60
+                underline underline-offset-4 decoration-dotted
+                transition-colors duration-300"
+            >
+              View pricing &amp; team details →
+            </a>
 
             {/* Toggle Details Button */}
-            <button
-              onClick={() => setShowDetails(!showDetails)}
-              className="w-full py-2 px-4 rounded-lg font-semibold text-sm
-                bg-gradient-to-r from-gray-700 to-gray-900 dark:from-gray-600 dark:to-gray-800 text-white
-                shadow-md hover:shadow-lg
-                transform transition-all duration-300
-                hover:scale-105 active:scale-95"
-            >
-              {showDetails ? 'Hide Details' : 'View Full Details'}
-            </button>
+            {!pkg.hideDetails && (
+              <button
+                onClick={() => setShowDetails(!showDetails)}
+                className="w-full py-2 px-4 rounded-lg font-semibold text-sm
+                  bg-gradient-to-r from-gray-700 to-gray-900 dark:from-gray-600 dark:to-gray-800 text-white
+                  shadow-md hover:shadow-lg
+                  transition-shadow duration-300"
+              >
+                {showDetails ? 'Hide Details' : 'View Full Details'}
+              </button>
+            )}
 
             {/* Expandable Details */}
-            {showDetails && (
+            {!pkg.hideDetails && showDetails && (
               <div className="space-y-4 pt-2 animate-fade-in">
                 {/* Photography Section */}
                 <div className="bg-white/40 dark:bg-gray-800/40 rounded-lg p-4">
@@ -374,12 +368,9 @@ export default function Ratecard() {
               className="block w-full mt-4 py-3 px-6 rounded-xl font-bold text-center
                 bg-gradient-to-r from-gray-700 to-gray-900 dark:from-gray-600 dark:to-gray-800 text-white
                 shadow-lg hover:shadow-xl
-                transform transition-all duration-300
-                hover:scale-105 active:scale-95
-                relative overflow-hidden group/button"
+                transition-shadow duration-300"
             >
-              <span className="relative z-10">Book Now</span>
-              <div className="absolute inset-0 bg-white/20 transform scale-x-0 group-hover/button:scale-x-100 transition-transform duration-300 origin-left" />
+              Book Now
             </Link>
 
             {/* Terms and Conditions Link */}
@@ -391,12 +382,6 @@ export default function Ratecard() {
             </Link>
           </div>
 
-          {/* Shine Effect */}
-          <div
-            className={`absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-white/10 to-transparent 
-            transform -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] 
-            transition-transform duration-1000`}
-          />
         </div>
       </div>
     );
@@ -444,12 +429,12 @@ export default function Ratecard() {
                 <div className="text-center mb-12">
                   <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 relative inline-block">
                     <span className="text-black dark:text-white">
-                      Wedding Coverage
+                      Our Packages
                     </span>
                     <span className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 opacity-30 animate-pulse" />
                   </h2>
                   <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                    Complete wedding photography and videography coverage packages
+                    Complete photography and videography coverage packages for every occasion
                   </p>
                 </div>
               </ScrollAnimation>
